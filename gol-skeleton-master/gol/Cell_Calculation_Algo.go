@@ -14,9 +14,16 @@ func calculateNeighbours(height, width int, world [][]byte, y int, x int) int {
 	w := width
 	noOfNeighbours := 0
 
-	neighbour := []byte{world[mod(y+1, h)][mod(x, w)], world[mod(y+1, h)][mod(x+1, w)], world[mod(y, h)][mod(x+1, w)],
-		world[mod(y-1, h)][mod(x+1, w)], world[mod(y-1, h)][mod(x, w)], world[mod(y-1, h)][mod(x-1, w)],
-		world[mod(y, h)][mod(x-1, w)], world[mod(y+1, h)][mod(x-1, w)]}
+	neighbour := []byte{
+		world[mod(y+1, h)][mod(x, w)],
+		world[mod(y+1, h)][mod(x+1, w)],
+		world[mod(y, h)][mod(x+1, w)],
+		world[mod(y-1, h)][mod(x+1, w)],
+		world[mod(y-1, h)][mod(x, w)],
+		world[mod(y-1, h)][mod(x-1, w)],
+		world[mod(y, h)][mod(x-1, w)],
+		world[mod(y+1, h)][mod(x-1, w)],
+	}
 
 	for i := 0; i < 8; i++ {
 		if neighbour[i] == 255 {
