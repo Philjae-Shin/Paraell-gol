@@ -7,6 +7,14 @@ import (
 	"uk.ac.bris.cs/gameoflife/gol"
 )
 
+// go test -run ^$ -bench . -benchtime 1x -count 20 | tee result/results.out
+// go run golang.org/x/perf/cmd/benchstat -csv result/results.out | tee result/results.csv
+
+//go test -run a$ -bench BenchmarkGol/512x512x1000-1 -timeout 100s -cpuprofile cpu.prof
+
+// go test -bench /8_ -benchtime 1x -count 20 -cpuprofile result/cpu.prof | tee result/benchmark_output.txt
+// go tool pprof -pdf -nodefraction=0 -unit=ms cpu.prof
+
 const benchLength = 1000
 
 func BenchmarkGol(b *testing.B) {

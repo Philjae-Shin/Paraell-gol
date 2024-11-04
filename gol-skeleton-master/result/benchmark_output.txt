@@ -1,0 +1,2 @@
+signal: killed
+FAIL	uk.ac.bris.cs/gameoflife	0.221s
