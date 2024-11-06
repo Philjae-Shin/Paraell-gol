@@ -7,8 +7,15 @@ import (
 	"uk.ac.bris.cs/gameoflife/gol"
 )
 
-// go test -run ^$ -bench . -benchtime 1x -count 10 | tee result/resultsNew.out
+// Benchmarking (Can change -count)
+// go test -run ^$ -bench . -benchtime 1x -count 8 | tee result/resultsNew.out
 // go run golang.org/x/perf/cmd/benchstat -csv result/resultsNew.out | tee result/resultsNew.csv
+
+// CPU profiling (Can change -count)
+// go test -bench /8_ -benchtime 1x -count 20 -cpuprofile cpu.prof
+
+// Convert to PDF
+// go tool pprof -pdf -nodefraction=0 -unit=ms cpu.prof
 
 const benchLength = 1000
 
