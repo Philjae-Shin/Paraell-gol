@@ -14,6 +14,8 @@ import (
 // CPU profiling (Can change -count)
 // go test -bench /8_ -benchtime 1x -count 20 -cpuprofile cpu.prof
 
+//go test -run ^$ -bench BenchmarkGol/512x512x1000-1 -timeout 100s -cpuprofile cpu.prof
+
 // Convert to PDF
 // go tool pprof -pdf -nodefraction=0 -unit=ms cpu.prof
 
