@@ -9,7 +9,7 @@ import (
 
 // Benchmarking (Can change -count)
 // go test -run ^$ -bench . -benchtime 1x -count 8 | tee result/resultsNew.out
-// go run golang.org/x/perf/cmd/benchstat -csv result/resultsNew.out | tee result/resultsNew.csv
+// go run golang.org/x/perf/cmd/benchstat -format csv result/resultsNew.out | tee result/resultsNew.csv
 
 // CPU profiling (Can change -count)
 // go test -bench /8_ -benchtime 1x -count 20 -cpuprofile cpu.prof
