@@ -10,31 +10,31 @@ type Params struct {
 
 // Run starts the processing of Game of Life. It should initialise channels and goroutines.
 func Run(p Params, events chan<- Event, keyPresses <-chan rune) {
+	// Initialize the DistributorChannels
+	c := NewDistributorChannels()
 
-	//	TODO: Put the missing channels in here.
+	// Start the Distributor
+	go Distributor(p, c, keyPresses)
 
-	ioCommand := make(chan ioCommand)
-	ioIdle := make(chan bool)
-	ioFilename := make(chan string)
-	ioOutput := make(chan uint8)
-	ioInput := make(chan uint8)
+	// Process events from DistributorChannels and forward them to the events channel
+	go func() {
+		for {
+			c.eventMu.Lock()
+			for len(c.events) == 0 {
+				c.eventCond.Wait()
+			}
+			eventsToProcess := c.events
+			c.events = nil
+			c.eventMu.Unlock()
 
-	ioChannels := ioChannels{
-		command:  ioCommand,
-		idle:     ioIdle,
-		filename: ioFilename,
-		output:   ioOutput,
-		input:    ioInput,
-	}
-	go startIo(p, ioChannels)
-
-	distributorChannels := distributorChannels{
-		events:     events,
-		ioCommand:  ioCommand,
-		ioIdle:     ioIdle,
-		ioFilename: ioFilename,
-		ioOutput:   ioOutput,
-		ioInput:    ioInput,
-	}
-	distributor(p, distributorChannels, keyPresses)
+			for _, event := range eventsToProcess {
+				events <- event
+				// If the event is FinalTurnComplete, we can close the events channel
+				if _, ok := event.(FinalTurnComplete); ok {
+					close(events)
+					return
+				}
+			}
+		}
+	}()
 }
