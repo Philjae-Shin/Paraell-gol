@@ -7,11 +7,16 @@ import (
 	"uk.ac.bris.cs/gameoflife/gol"
 )
 
+// go test -run ^$ -bench . -benchtime 1x -count 10 | tee result/resultsNew.out
+// go run golang.org/x/perf/cmd/benchstat -csv result/resultsNew.out | tee result/resultsNew.csv
+
 const benchLength = 1000
 
 func BenchmarkGol(b *testing.B) {
+	// Disable all program output apart from benchmark results
+	os.Stdout = nil
+
 	for threads := 1; threads <= 16; threads++ {
-		os.Stdout = nil // Disable all program output apart from benchmark results
 		p := gol.Params{
 			Turns:       benchLength,
 			Threads:     threads,
