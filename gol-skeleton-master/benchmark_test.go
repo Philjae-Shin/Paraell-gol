@@ -22,7 +22,6 @@ import (
 const benchLength = 1000
 
 func BenchmarkGol(b *testing.B) {
-	// Disable all program output apart from benchmark results
 	os.Stdout = nil
 
 	for threads := 1; threads <= 16; threads++ {
