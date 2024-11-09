@@ -86,7 +86,6 @@ func calculateNextState(height, width, startY, endY int, world [][]byte) ([][]by
 	flipCell := make([]util.Cell, height, width)
 	for i := 0; i < endY-startY; i++ {
 		newWorld[i] = make([]byte, len(world[0]))
-		// copy(newWorld[i], world[startY+i])
 	}
 
 	for y := 0; y < endY-startY; y++ {
