@@ -32,10 +32,8 @@ var rCond = sync.NewCond(rMutex)
 var readInProgress bool = false
 var writeInProgress bool = false
 
-// startY <= target < endY,
-// startX <= target < endX (Same for every worker since we slice horizontally)
 // Modify params in calculateNextState
-func worker(p Params, startY, endY, startX, endX int, world [][]uint8, c distributorChannels, currentTurn int) {
+func worker(p Params, startY, endY, startX, endX int, world [][]uint8, c distributorChannels, turn int) {
 	cellUpdates := make([]util.Cell, (endY-startY)*endX/2)
 	nextWorldPart := make([][]uint8, endY-startY)
 	previousWorld := make([][]uint8, p.ImageHeight)
@@ -68,7 +66,7 @@ func worker(p Params, startY, endY, startX, endX int, world [][]uint8, c distrib
 	}
 	for _, cell := range cellUpdates {
 		c.events <- CellFlipped{
-			CompletedTurns: currentTurn,
+			CompletedTurns: turn,
 			Cell:           cell,
 		}
 	}
@@ -111,20 +109,20 @@ func handleInput(p Params, c distributorChannels, world [][]uint8) [][]uint8 {
 	return world
 }
 
-func handleKeyPress(p Params, c distributorChannels, keyPresses <-chan rune, worldChannel <-chan [][]uint8, turnChannel <-chan int, userAction chan int) {
+func handleKeyPress(p Params, c distributorChannels, keyPresses <-chan rune, worldChannel <-chan [][]uint8, turnChannel <-chan int, actions chan int) {
 	paused := false
 	for {
 		input := <-keyPresses
 
 		switch input {
 		case 's':
-			userAction <- Save
+			actions <- Save
 			w := <-worldChannel
 			turn := <-turnChannel
 			go handleOutput(p, c, w, turn)
 
 		case 'q':
-			userAction <- Quit
+			actions <- Quit
 			w := <-worldChannel
 			turn := <-turnChannel
 			go handleOutput(p, c, w, turn)
@@ -136,14 +134,14 @@ func handleKeyPress(p Params, c distributorChannels, keyPresses <-chan rune, wor
 			c.events <- FinalTurnComplete{CompletedTurns: turn}
 		case 'p':
 			if paused {
-				userAction <- unPause
+				actions <- unPause
 				turn := <-turnChannel
 				paused = false
 				newState := StateChange{CompletedTurns: turn, NewState: State(Executing)}
 				fmt.Println(newState.String())
 				c.events <- newState
 			} else {
-				userAction <- Pause
+				actions <- Pause
 				turn := <-turnChannel
 				paused = true
 				newState := StateChange{CompletedTurns: turn, NewState: State(Paused)}
