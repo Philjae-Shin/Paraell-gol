@@ -109,20 +109,20 @@ func handleInput(p Params, c distributorChannels, world [][]uint8) [][]uint8 {
 	return world
 }
 
-func handleKeyPress(p Params, c distributorChannels, keyPresses <-chan rune, worldChannel <-chan [][]uint8, turnChannel <-chan int, actions chan int) {
+func handleKeyPress(p Params, c distributorChannels, keyPresses <-chan rune, worldChannel <-chan [][]uint8, turnChannel <-chan int, action chan int) {
 	paused := false
 	for {
 		input := <-keyPresses
 
 		switch input {
 		case 's':
-			actions <- Save
+			action <- Save
 			w := <-worldChannel
 			turn := <-turnChannel
 			go handleOutput(p, c, w, turn)
 
 		case 'q':
-			actions <- Quit
+			action <- Quit
 			w := <-worldChannel
 			turn := <-turnChannel
 			go handleOutput(p, c, w, turn)
@@ -134,14 +134,14 @@ func handleKeyPress(p Params, c distributorChannels, keyPresses <-chan rune, wor
 			c.events <- FinalTurnComplete{CompletedTurns: turn}
 		case 'p':
 			if paused {
-				actions <- unPause
+				action <- unPause
 				turn := <-turnChannel
 				paused = false
 				newState := StateChange{CompletedTurns: turn, NewState: State(Executing)}
 				fmt.Println(newState.String())
 				c.events <- newState
 			} else {
-				actions <- Pause
+				action <- Pause
 				turn := <-turnChannel
 				paused = true
 				newState := StateChange{CompletedTurns: turn, NewState: State(Paused)}
