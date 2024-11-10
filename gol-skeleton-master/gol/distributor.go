@@ -89,7 +89,6 @@ func handleOutput(p Params, c distributorChannels, world [][]uint8, t int) {
 	}
 }
 
-// Gets input from IO and initialises cellflip
 func handleInput(p Params, c distributorChannels, world [][]uint8) [][]uint8 {
 	filename := strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth)
 	c.ioCommand <- 1
@@ -160,11 +159,9 @@ func handleKeyPress(p Params, c distributorChannels, keyPresses <-chan rune, wor
 func distributor(p Params, c distributorChannels, keyPresses <-chan rune) {
 	world := make([][]uint8, p.ImageHeight)
 	previousWorld := make([][]uint8, p.ImageHeight)
-	sharedWorld := make([][]uint8, p.ImageHeight)
 	for i := range world {
 		world[i] = make([]uint8, p.ImageWidth)
 		previousWorld[i] = make([]uint8, p.ImageWidth)
-		sharedWorld[i] = make([]uint8, p.ImageWidth)
 	}
 
 	world = handleInput(p, c, world)
@@ -226,7 +223,7 @@ func distributor(p Params, c distributorChannels, keyPresses <-chan rune) {
 
 	channels := make([]chan [][]uint8, p.Threads)
 	cellUpdates := make([]util.Cell, p.ImageHeight*p.ImageWidth)
-	unit := int(p.ImageHeight / p.Threads)
+	unit := p.ImageHeight / p.Threads
 
 	for t := 0; t < p.Turns; t++ {
 		cellUpdates = make([]util.Cell, p.ImageHeight*p.ImageWidth)
